@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html ng-app="productApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Management | AngularJS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body ng-controller="productCtrl">
+<div class="container-sm mt-5">
+    <h1>Product Management System</h1>
+    <button class="btn btn-success fs-6" data-toggle="modal"
+            data-target="#modalAdd"><i class="fa fa-plus"></i> Add Product</button>
+    <div class="alert alert-success col-5 mt-1 alert-dismissible fade show" ng-if="message">
+         {{message}}
+        <button type="button" class="btn-close" ng-click="clearMessage()" aria-label="Close"></button>
+    </div>
+    <table class="table table-bordered table-striped" style="margin-top:10px;">
+        <thead>
+            <th>#</th>
+            <th>Image</th>
+            <th>Product Name</th>
+            <th>Product Category</th>
+            <th>Product Price</th>
+            <th>Status</th>
+            <th>Action</th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="product in products">
+                <td>{{$index + 1}}</td>
+                <td style="text-align: center;"><img src="imgs/no-image.png" alt=""></td>
+                <td>{{product.name}}</td>
+                <td>{{product.category}}</td>
+                <td>{{product.price | currency:""}}</td>
+                <td>{{product.status | status}}</td>
+                <td>
+                    <button class="btn btn-primary fs-6" data-toggle="modal"
+                            data-target="#modalEdit" ng-click="selectProduct(product)"><i class="fa fa-edit"></i> Edit</button>
+                    <button class="btn btn-danger fs-6" data-toggle="modal"
+                            data-target="#modalDelete" ng-click="selectProduct(product)"><i class="fa fa-trash"></i> Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!--    Modal Delete-->
+<div class="modal fade" id="modalDelete" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Product</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteProduct()">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--    Modal Add-->
+<div class="modal fade" id="modalAdd" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Product</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="pro_name">Product Name</span>
+                        <input type="text" class="form-control" ng-model="newProduct.name" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <select class="form-select form-select" ng-model="newProduct.category">
+                            <option selected>Select Category</option>
+                            <option value="Smartphone">Smartphone</option>
+                            <option value="Laptop">Laptop</option>
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="pro_price">Price</span>
+                        <input type="number" class="form-control" ng-model="newProduct.price">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" ng-model="newProduct.status" id="inlineRadio1" value="1" checked="checked">
+                            <label class="form-check-label" for="inlineRadio1">Active</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" ng-model="newProduct.status" id="inlineRadio2" value="0">
+                            <label class="form-check-label" for="inlineRadio2">Not Active</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" ng-click="addProduct()" data-dismiss="modal">
+                    Add new
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--    Modal Add-->
+<div class="modal fade" id="modalEdit" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Product</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="pro_name">Product Name</span>
+                        <input type="text" class="form-control" ng-model="clickedProduct.name" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="pro_price">Price</span>
+                        <input type="number" class="form-control" ng-model="clickedProduct.price">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" ng-click="editProduct()" data-dismiss="modal">
+                    Save Change
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+</body>
+</html>
